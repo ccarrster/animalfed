@@ -8,13 +8,10 @@ class FoodEvent {
     this.name = name;
     this.amountg = amountg;
     let timestamp = new Date();
-    console.log(time);
     if(time != ''){
-      let timeParts = time.split(':');
-      timestamp.setHours(timeParts[0], timeParts[1]);
+      timestamp = new Date(time);
     }
     this.timestamp = timestamp;
-    console.log(this.timestamp);
   }
 }
 
@@ -87,20 +84,23 @@ function Pet(props){
   const d = new Date();
   let hour = d.getHours();
   let labels = [];
-  for(let i = 1; i > -24; i--){
-    let newVal = hour + i;
+  for(let i = 1; i > -23; i--){
+    let newVal = hour + i - 1;
     if(newVal < 0){
       newVal += 24;
     }
     labels.unshift(newVal);
   }
   let data = [];
-  let nowDate = new Date();
-  let next = new Date();
-  let nowHours = nowDate.getHours();
+  let now = new Date();
+  let nowHours = now.getHours();
   for(let j = 0; j < 24; j++){
+    let nowDate = new Date();
+    let next = new Date();
     nowDate.setHours(nowHours  - j);
-    next.setHours(nowHours  - j + 1);
+    nowDate.setMinutes(0);
+    next.setHours(nowHours - j + 1);
+    next.setMinutes(0);
     let totalAmountg = props.pet.history.map((event) => {
       if(event.timestamp > nowDate && event.timestamp < next){
         return event.amountg;
@@ -121,19 +121,21 @@ function Pet(props){
     <div key={props.pet.name}>
       <h1>{props.pet.type} {props.pet.name}</h1>
       {feeds}
-      <input type='time' id='feedTime' onChange={handleTimeChange} value={timeState}/>
+      <input type='datetime-local' id='feedTime' onChange={handleTimeChange} value={timeState}/>
       <button onClick={handleClearTime}>Clear Time</button>
-      <Bar 
-      data={{
-        labels: labels,
-        datasets: [
-          {
-            label: "Feeds Amount",
-            data: data,
-          }
-        ]
-      }}
-      />
+      
+        <Bar 
+        data={{
+          labels: labels,
+          datasets: [
+            {
+              label: "Feeds Amount",
+              data: data,
+            }
+          ]
+        }}
+        />
+      
     </div>
   );
 }
